@@ -7,8 +7,12 @@ namespace SojaExiles
 {
     public class PlayerMovement : MonoBehaviour
     {
+        public GameObject mPlayer;
+
 
         public CharacterController controller;
+
+        
 
         public float speed = 5f;
         public float gravity = -15f;
@@ -21,16 +25,23 @@ namespace SojaExiles
         void Update()
         {
 
-            float x = Input.GetAxis("Horizontal");
-            float z = Input.GetAxis("Vertical");
+            PlayerHiding playerHiding = mPlayer.GetComponent<PlayerHiding>();
 
-            Vector3 move = transform.right * x + transform.forward * z;
+            if (playerHiding.movingAllowed)
+            {
+                float x = Input.GetAxis("Horizontal");
+                float z = Input.GetAxis("Vertical");
 
-            controller.Move(move * speed * Time.deltaTime);
+                Vector3 move = transform.right * x + transform.forward * z;
 
-            velocity.y += gravity * Time.deltaTime;
+                controller.Move(move * speed * Time.deltaTime);
 
-            controller.Move(velocity * Time.deltaTime);
+                velocity.y += gravity * Time.deltaTime;
+
+                controller.Move(velocity * Time.deltaTime);
+
+            }
+            
 
         }
     }
