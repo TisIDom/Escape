@@ -3,15 +3,13 @@ using UnityEngine.AI;
 
 public class WaiterController : MonoBehaviour
 {
-    public LayerMask tableLayer;
-    public LayerMask playerLayer;
     public float standTime = 3.0f;
-    public float noticeDistance = 10.0f;
+    public float fieldOfViewAngle = 90.0f;
     private NavMeshAgent agent;
     private Transform target;
     private float timeToStand;
-    public float fieldOfViewAngle = 90.0f;
     private Transform player;
+    private LayerMask tableLayerMask;
 
     void Start()
     {
@@ -19,6 +17,7 @@ public class WaiterController : MonoBehaviour
         timeToStand = Time.time + standTime;
         FindNewTable();
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        tableLayerMask = LayerMask.GetMask("Table");
     }
 
     void Update()
@@ -34,10 +33,10 @@ public class WaiterController : MonoBehaviour
 
     void FindNewTable()
     {
-        Collider[] tables = Physics.OverlapSphere(transform.position, noticeDistance, tableLayer);
-        if (tables.Length > 0)
+        Collider[] tableColliders = Physics.OverlapSphere(transform.position, 100.0f, tableLayerMask); // Adjust the radius as needed.
+        if (tableColliders.Length > 0)
         {
-            target = tables[Random.Range(0, tables.Length)].transform;
+            target = tableColliders[Random.Range(0, tableColliders.Length)].transform;
             agent.SetDestination(target.position);
         }
     }
@@ -50,7 +49,7 @@ public class WaiterController : MonoBehaviour
         if (angleToPlayer < fieldOfViewAngle * 0.5f)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, directionToPlayer, out hit, noticeDistance))
+            if (Physics.Raycast(transform.position, directionToPlayer, out hit, 100.0f)) // Adjust the distance as needed.
             {
                 if (hit.collider.CompareTag("Player"))
                 {
