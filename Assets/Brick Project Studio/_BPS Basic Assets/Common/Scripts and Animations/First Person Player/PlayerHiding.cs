@@ -1,65 +1,54 @@
-using SojaExiles;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerHiding : MonoBehaviour
 {
-    private bool isUnderTable;
+    public bool isUnderTable = false;
     private Vector3 originalScale;
     private Collider nearestTable;
-    private Vector3 locationBeforeHiding;
-
-    public bool movingAllowed = true;
+    private Vector3 locBeforeHiding;
+    private float timer;
 
     private void Start()
     {
-        isUnderTable = false;
+        timer = Time.frameCount;
         originalScale = transform.localScale;
     }
 
     private void Update()
     {
-        if (isUnderTable)
+        if (Input.GetKeyDown(KeyCode.C) && Time.frameCount - timer>60)
         {
-            movingAllowed = false;
-        }
-        else
-        {
-            movingAllowed = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            locationBeforeHiding = transform.localPosition;
             if (isUnderTable)
             {
-                
                 // Return to original scale and move out from under the table.
-                transform.localScale = originalScale;
+                
                 isUnderTable = false;
                 if (nearestTable != null)
                 {
                     // Move the character out from under the table.
-                    transform.position = locationBeforeHiding;
+                    transform.position = locBeforeHiding;
                 }
+                transform.localScale = originalScale;
             }
             else
             {
-                //not done yet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // Find the nearest table and go under it.
+                locBeforeHiding = transform.position;
+                // Find the nearest table and check for obstacles before going under.
                 FindNearestTable();
-                if (nearestTable != null && !IsObstacleInWay())
+                if (nearestTable != null)
                 {
                     isUnderTable = true;
                     transform.localScale = originalScale * 0.5f;
-
                     // Move the character under the table.
-                    Vector3 targetPosition = nearestTable.transform.position + new Vector3(0f, transform.localScale.y / 2f - nearestTable.bounds.extents.y, 0f);
+                    Vector3 targetPosition = nearestTable.transform.position  - new Vector3(0f, 0.66f, 0f);
                     transform.position = targetPosition;
                 }
             }
+            timer = Time.frameCount;
         }
+        //Debug.LogError(Time.frameCount);
     }
 
     private void FindNearestTable()
@@ -77,25 +66,5 @@ public class PlayerHiding : MonoBehaviour
                 nearestTable = table;
             }
         }
-    }
-
-
-    private bool IsObstacleInWay()
-    {
-        if (nearestTable == null)
-            return true; // No table to go under.
-
-        Vector3 direction = nearestTable.transform.position - transform.position;
-        float distance = direction.magnitude;
-        Ray ray = new Ray(transform.position, direction.normalized);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, distance, LayerMask.GetMask("Obstacles")))
-        {
-            // There's an obstacle in the way.
-            return true;
-        }
-
-        return false;
     }
 }
