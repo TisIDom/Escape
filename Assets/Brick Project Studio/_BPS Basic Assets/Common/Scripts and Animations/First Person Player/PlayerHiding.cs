@@ -18,7 +18,7 @@ public class PlayerHiding : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C) && Time.frameCount - timer>60)
+        if (Input.GetKeyDown(KeyCode.C) && Time.frameCount - timer > 60)
         {
             if (isUnderTable)
             {
@@ -31,6 +31,7 @@ public class PlayerHiding : MonoBehaviour
                     transform.position = locBeforeHiding;
                 }
                 transform.localScale = originalScale;
+                transform.position = locBeforeHiding;
             }
             else
             {
