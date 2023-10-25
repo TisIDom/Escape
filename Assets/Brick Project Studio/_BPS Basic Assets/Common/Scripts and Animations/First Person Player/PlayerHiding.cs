@@ -9,35 +9,41 @@ public class PlayerHiding : MonoBehaviour
     private Collider nearestTable;
     private Vector3 locBeforeHiding;
     private float timer;
+    public float timeBeforeUnder = 1f;
 
     private void Start()
     {
-        timer = Time.realtimeSinceStartup;
+        timer = Time.time;
         originalScale = transform.localScale;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C) && Time.realtimeSinceStartup - timer > 2)
-            //bug: can reset timer before getting close to table
+
+
+        if (Input.GetKeyDown(KeyCode.C) && Time.time - timer > timeBeforeUnder)
+        //bug: can reset timer before getting close to table
         {
+
             if (isUnderTable)
             {
+                Debug.LogError("undertable");
                 // Return to original scale and move out from under the table.
-                
+
                 isUnderTable = false;
                 if (nearestTable != null)
                 {
-                    // Move the character out from under the table.
-                    transform.position = locBeforeHiding;
+
                     transform.localScale = originalScale;
+                    transform.position = locBeforeHiding;
                 }
-                
-                //transform.position = locBeforeHiding;
+
             }
             else
             {
+                Debug.LogError("out of under table");
                 locBeforeHiding = transform.position;
+                //Debug.LogError("location overwriten ");
                 // Find the nearest table and check for obstacles before going under.
                 FindNearestTable();
                 if (nearestTable != null)
@@ -45,13 +51,21 @@ public class PlayerHiding : MonoBehaviour
                     isUnderTable = true;
                     transform.localScale = originalScale * 0.5f;
                     // Move the character under the table.
-                    Vector3 targetPosition = nearestTable.transform.position  - new Vector3(0f, 0.66f, 0f);
+                    Vector3 targetPosition = nearestTable.transform.position - new Vector3(0f, 0.66f, 0f);
                     transform.position = targetPosition;
                 }
             }
-            timer = Time.realtimeSinceStartup;
+            timer = Time.time;
+
+
+            Debug.LogError("Pressed C");
+            Debug.LogError("Current position: " + transform.position);
+            Debug.LogError("Previous position: " + locBeforeHiding + "\n" +
+                       "Table center location: " + (nearestTable.transform.position - new Vector3(0f, 0.66f, 0f)) + "\n");
+
         }
-        //Debug.LogError(Time.frameCount);
+
+
     }
 
     private void FindNearestTable()
@@ -70,4 +84,6 @@ public class PlayerHiding : MonoBehaviour
             }
         }
     }
+
+
 }
