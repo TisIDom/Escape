@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 6836784030420629257}
   - component: {fileID: 7681081821878825815}
   - component: {fileID: 5740971952606538584}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Table Top.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
