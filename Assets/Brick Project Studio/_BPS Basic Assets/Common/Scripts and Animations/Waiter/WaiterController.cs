@@ -4,7 +4,7 @@ using UnityEngine.AI;
 public class WaiterController : MonoBehaviour
 {
     public float standTime = 3.0f;
-    public float fieldOfViewAngle = 90.0f;
+    public float fieldOfViewAngle = 1000000.0f;
     private NavMeshAgent agent;
     private Transform target;
     private float timeToStand;
@@ -46,16 +46,16 @@ public class WaiterController : MonoBehaviour
         Vector3 directionToPlayer = player.position - transform.position;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-        if (angleToPlayer < fieldOfViewAngle * 0.5f)
-        {
+        //if (angleToPlayer < fieldOfViewAngle * 0.5f)
+        //{
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, directionToPlayer, out hit, 100.0f)) // Adjust the distance as needed.
+            if (Physics.Raycast(transform.position, directionToPlayer, out hit, 5000.0f)) // Adjust the distance as needed.
             {
                 if (hit.collider.CompareTag("Player"))
                 {
                     agent.SetDestination(player.position);
                 }
             }
-        }
+        //}
     }
 }
