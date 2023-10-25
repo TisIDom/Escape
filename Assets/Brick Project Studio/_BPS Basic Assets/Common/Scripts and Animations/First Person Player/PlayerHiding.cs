@@ -12,13 +12,14 @@ public class PlayerHiding : MonoBehaviour
 
     private void Start()
     {
-        timer = Time.frameCount;
+        timer = Time.realtimeSinceStartup;
         originalScale = transform.localScale;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C) && Time.frameCount - timer > 60)
+        if (Input.GetKeyDown(KeyCode.C) && Time.realtimeSinceStartup - timer > 2)
+            //bug: can reset timer before getting close to table
         {
             if (isUnderTable)
             {
@@ -48,7 +49,7 @@ public class PlayerHiding : MonoBehaviour
                     transform.position = targetPosition;
                 }
             }
-            timer = Time.frameCount;
+            timer = Time.realtimeSinceStartup;
         }
         //Debug.LogError(Time.frameCount);
     }

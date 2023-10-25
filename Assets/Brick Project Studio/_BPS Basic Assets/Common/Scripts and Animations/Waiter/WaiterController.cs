@@ -10,6 +10,7 @@ public class WaiterController : MonoBehaviour
     private float timeToStand;
     private Transform player;
     private LayerMask tableLayerMask;
+    public PlayerHiding pHiding;
 
     void Start()
     {
@@ -51,7 +52,7 @@ public class WaiterController : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, directionToPlayer, out hit, 5000.0f)) // Adjust the distance as needed.
             {
-                if (hit.collider.CompareTag("Player"))
+                if (hit.collider.CompareTag("Player") && !pHiding.isUnderTable)
                 {
                     agent.SetDestination(player.position);
                 }
