@@ -30,8 +30,7 @@ public class PlayerHiding : MonoBehaviour
                     // Move the character out from under the table.
                     transform.position = locBeforeHiding;
                 }
-                transform.localScale = originalScale;
-                transform.position = locBeforeHiding;
+                //transform.position = locBeforeHiding;
             }
             else
             {
@@ -54,7 +53,7 @@ public class PlayerHiding : MonoBehaviour
 
     private void FindNearestTable()
     {
-        Collider[] tables = Physics.OverlapSphere(transform.position, 1f, LayerMask.GetMask("Tables"));
+        Collider[] tables = Physics.OverlapSphere(transform.position, 1f, LayerMask.GetMask("Table"));
         float nearestDistance = float.MaxValue;
         nearestTable = null;
 
