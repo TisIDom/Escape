@@ -29,7 +29,9 @@ public class PlayerHiding : MonoBehaviour
                 {
                     // Move the character out from under the table.
                     transform.position = locBeforeHiding;
+                    transform.localScale = originalScale;
                 }
+                
                 //transform.position = locBeforeHiding;
             }
             else
