@@ -521,6 +521,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 3289306020569707472, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 359.1613
+      objectReference: {fileID: 0}
+    - target: {fileID: 3289306020569707472, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.000026703
+      objectReference: {fileID: 0}
     - target: {fileID: 3708763099281224438, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -568,6 +576,10 @@ PrefabInstance:
     - target: {fileID: 4313522425740252071, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4403479505557249835, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
+      propertyPath: m_LayoutPriority
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6614270664099113775, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
       propertyPath: m_Pivot.x
@@ -672,6 +684,10 @@ PrefabInstance:
     - target: {fileID: 6949982229805704318, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7134718504993020702, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
+      propertyPath: m_MinHeight
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 7341322795334951590, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
       propertyPath: m_AnchorMax.y
