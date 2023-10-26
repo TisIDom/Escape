@@ -11,10 +11,13 @@ public class PlayerHiding : MonoBehaviour
     private float timer;
     public float timeBeforeUnder = 1f;
 
+    private TableAnimation tableAnim;
+
     private void Start()
     {
         timer = Time.time;
         originalScale = transform.localScale;
+        tableAnim = GetComponent<TableAnimation>();
     }
 
     private void Update()
@@ -22,10 +25,10 @@ public class PlayerHiding : MonoBehaviour
 
         FindNearestTable();
 
-
-        if (Input.GetKeyDown(KeyCode.C) && Time.time - timer > timeBeforeUnder && nearestTable != null)
+        if ((Input.GetKeyDown(KeyCode.C) && Time.time - timer > timeBeforeUnder && nearestTable != null))
         //bug: can reset timer before getting close to table
         {
+            tableAnim.UnderForNow = true;
             //Debug.LogError("Pressed C");
             
             if (isUnderTable)
@@ -75,7 +78,7 @@ public class PlayerHiding : MonoBehaviour
 
     private void FindNearestTable()
     {
-        Collider[] tables = Physics.OverlapSphere(transform.position, 1f, LayerMask.GetMask("Table"));
+        Collider[] tables = Physics.OverlapSphere(transform.position, 1f, LayerMask.GetMask("TableTops"));
         float nearestDistance = float.MaxValue;
         nearestTable = null;
 
