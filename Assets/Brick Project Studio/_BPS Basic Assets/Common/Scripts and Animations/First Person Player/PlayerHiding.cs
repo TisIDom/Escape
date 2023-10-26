@@ -24,28 +24,27 @@ public class PlayerHiding : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C) && Time.time - timer > timeBeforeUnder)
         //bug: can reset timer before getting close to table
         {
-
+            Debug.LogError("Pressed C");
+            FindNearestTable();
             if (isUnderTable)
             {
-                Debug.LogError("undertable");
+                Debug.LogError("Out of Table --->");
                 // Return to original scale and move out from under the table.
 
                 isUnderTable = false;
                 if (nearestTable != null)
                 {
-
-                    transform.localScale = originalScale;
                     transform.position = locBeforeHiding;
+                    transform.localScale = originalScale;
                 }
 
             }
             else
             {
-                Debug.LogError("out of under table");
+                Debug.LogError("In Table --->");
                 locBeforeHiding = transform.position;
                 //Debug.LogError("location overwriten ");
                 // Find the nearest table and check for obstacles before going under.
-                FindNearestTable();
                 if (nearestTable != null)
                 {
                     isUnderTable = true;
@@ -58,14 +57,18 @@ public class PlayerHiding : MonoBehaviour
             timer = Time.time;
 
 
-            Debug.LogError("Pressed C");
-            Debug.LogError("Current position: " + transform.position);
-            Debug.LogError("Previous position: " + locBeforeHiding + "\n" +
-                       "Table center location: " + (nearestTable.transform.position - new Vector3(0f, 0.66f, 0f)) + "\n");
+            //Debug.LogError("Pressed C");
+            //Debug.LogError("Current position: " + transform.position);
+            //Debug.LogError("Previous position: " + locBeforeHiding + "\n" +
+            //           "Table center location: " + (nearestTable.transform.position - new Vector3(0f, 0.66f, 0f)) + "\n");
 
         }
 
-
+        
+        
+        Debug.LogError("Current position: " + transform.position);
+        Debug.LogError("Previous position: " + locBeforeHiding + "\n" +
+                   "Table center location: " + (nearestTable.transform.position - new Vector3(0f, 0.66f, 0f)) + "\n");
     }
 
     private void FindNearestTable()

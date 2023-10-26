@@ -19,7 +19,6 @@ public class WaiterController : MonoBehaviour
     private float questionMarkDisplayStartTime;
 
     public GameObject exclamationMark; // Reference to the exclamation mark GameObject
-    private bool isExclamationMarkVisible = false;
 
 
     private bool isSprinting;
@@ -143,7 +142,7 @@ public class WaiterController : MonoBehaviour
             questionMark.SetActive(false);
             isQuestionMarkVisible = false;
             exclamationMark.SetActive(true);
-            isExclamationMarkVisible = true;
+            
         //Debug.LogError("Showing Exclamation Mark !!!");
     }
 
@@ -163,7 +162,7 @@ public class WaiterController : MonoBehaviour
             agent.isStopped = false;
             agent.speed *= 2;
             exclamationMark.SetActive(true) ;
-            isExclamationMarkVisible=true;
+            
             isSprinting = true;
         }
         else
