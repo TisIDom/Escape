@@ -4,8 +4,8 @@ using UnityEngine.AI;
 
 public class WaiterController : MonoBehaviour
 {
-    public float standTime = 3.0f;
-    public float fieldOfViewAngle = 1000000.0f;
+    public float standTime = 2.0f;
+    public float fieldOfViewAngle = 135.0f;
     private NavMeshAgent agent;
     private Transform target;
     private float timeToStand;
@@ -15,16 +15,17 @@ public class WaiterController : MonoBehaviour
 
     public GameObject questionMark; // Reference to the question mark GameObject
     private bool isQuestionMarkVisible = false;
-    public float questionMarkDisplayDuration = 3.0f;
+    public float questionMarkDisplayDuration = 2.5f;
     private float questionMarkDisplayStartTime;
 
     public GameObject exclamationMark; // Reference to the exclamation mark GameObject
 
+    private bool isExclamationMarkVisible;
+
     // Add these fields for stereo audio
-    public AudioSource leftAudioSource;
-    public AudioSource rightAudioSource;
-    public AudioClip leftChannelSound;
-    public AudioClip rightChannelSound;
+    private AudioSource audioSource;
+
+    public AudioClip channelSound;
 
 
     private bool isSprinting;
@@ -42,13 +43,15 @@ public class WaiterController : MonoBehaviour
         questionMark.SetActive(false);
         exclamationMark.SetActive(false);
 
-        // Get the AudioSource component from this GameObject
-        leftAudioSource = gameObject.AddComponent<AudioSource>();
-        rightAudioSource = gameObject.AddComponent<AudioSource>();
+
+
+        // Get the audioSource component from this GameObject
+        audioSource = gameObject.AddComponent<AudioSource>();
 
         // Configure the audio sources
-        leftAudioSource.spatialBlend = 1.0f;  // Full 3D spatialization
-        rightAudioSource.spatialBlend = 1.0f;
+        audioSource.spatialBlend = 1.0f;  // Full 3D spatialization
+
+        isExclamationMarkVisible = false;
     }
 
     void Update()
@@ -83,35 +86,35 @@ public class WaiterController : MonoBehaviour
         Vector3 directionToPlayer = player.position - transform.position;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-
-        
-
-
-
         questionMark.transform.LookAt(player);
         exclamationMark.transform.LookAt(player);
 
+        if (angleToPlayer <= fieldOfViewAngle / 2 || angleToPlayer >= 360 - fieldOfViewAngle / 2 || isSprinting)
+        {
+
+
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, directionToPlayer, out hit, 5000.0f) && (!pHiding.isUnderTable || isSprinting ))
+            if (Physics.Raycast(transform.position, directionToPlayer, out hit, 10000f) && (!pHiding.isUnderTable || isSprinting))
             {
                 if (hit.collider.CompareTag("Player") && !isSprinting)
                 {
                     agent.SetDestination(player.position);
                     agent.isStopped = true; // Stop the waiter
                     Invoke("StartSprinting", questionMarkDisplayDuration);
+                    if (Vector3.Distance(player.position, transform.position) < 5.0f)
+                        Invoke("StartSprinting", 0f);
 
-                    
+
 
                     ShowQuestionMarkAboveHead();
-                    
 
-            }
+
+                }
                 if (isSprinting)
                 {
                     agent.SetDestination(player.position);
 
                 }
-
             }
             else if (!isQuestionMarkVisible)
             {
@@ -119,56 +122,64 @@ public class WaiterController : MonoBehaviour
             }
 
 
+            if ((isQuestionMarkVisible && !pHiding.isUnderTable) || isExclamationMarkVisible)
+                SmoothLookAtPlayer();
+
+
+
+            if (pHiding.isUnderTable)
+            {
+                CancelInvoke();
+                agent.isStopped = false;
+                if (isQuestionMarkVisible)
+                    HideQuestionMark();
+            }
+
+        }
 
     }
 
     void ShowQuestionMarkAboveHead()
     {
 
-        // NOTE: Sometimes turns to exclamation mark without it turning to question mark first.
-
-
-        SmoothLookAtPlayer();
+        // NOTE: Sometimes turns to exclamation mark without it turning to question mark first
 
         if (!isQuestionMarkVisible)
         {
+            // Question mark
             questionMark.SetActive(true);
             isQuestionMarkVisible = true;
             questionMarkDisplayStartTime = Time.time;
 
-            // Play left and right channel sounds
-            if (leftChannelSound != null && rightChannelSound != null)
+            // AUDIO
+            if (channelSound != null)
             {
-                leftAudioSource.clip = leftChannelSound;
-                rightAudioSource.clip = rightChannelSound;
+                audioSource.clip = channelSound;
 
                 // Set positions for stereo effect
-                leftAudioSource.transform.position = transform.position - transform.right;
-                rightAudioSource.transform.position = transform.position + transform.right;
+                audioSource.transform.position = transform.position - transform.right;
+                audioSource.transform.position = transform.position + transform.right;
 
-                leftAudioSource.Play();
-                rightAudioSource.Play();
+                audioSource.Play();
             }
         }
 
-        if (pHiding.isUnderTable)
-        {
-            CancelInvoke();
-            agent.isStopped = false;
-            HideQuestionMark();
-        }
+
 
         if (Time.time - questionMarkDisplayStartTime >= questionMarkDisplayDuration)
         {
             HideQuestionMark();
         }
+
+        
     }
 
     void ShowExclamationMarkAboveHead()
     {
-            questionMark.SetActive(false);
-            isQuestionMarkVisible = false;
-            exclamationMark.SetActive(true);
+        questionMark.SetActive(false);
+        isQuestionMarkVisible = false;
+        exclamationMark.SetActive(true);
+        isExclamationMarkVisible = true; 
             
         //Debug.LogError("Showing Exclamation Mark !!!");
     }
@@ -188,17 +199,11 @@ public class WaiterController : MonoBehaviour
             ShowExclamationMarkAboveHead();
             agent.isStopped = false;
             agent.speed *= 2;
-            exclamationMark.SetActive(true) ;
-            
-            isSprinting = true;
+            exclamationMark.SetActive(true);
         }
-        else
-        {
-            questionMark.SetActive(false);
-            isQuestionMarkVisible=false;
-        }
-
-        return;
+        questionMark.SetActive(false);
+        isQuestionMarkVisible=false;
+        isSprinting = true;
     }
 
 
@@ -208,6 +213,6 @@ public class WaiterController : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
 
         // Smoothly interpolate the rotation over 0.5 seconds.
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 2.0f * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.0f * Time.deltaTime);
     }
 }
