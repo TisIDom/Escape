@@ -20,6 +20,12 @@ public class WaiterController : MonoBehaviour
 
     public GameObject exclamationMark; // Reference to the exclamation mark GameObject
 
+    // Add these fields for stereo audio
+    public AudioSource leftAudioSource;
+    public AudioSource rightAudioSource;
+    public AudioClip leftChannelSound;
+    public AudioClip rightChannelSound;
+
 
     private bool isSprinting;
 
@@ -35,6 +41,14 @@ public class WaiterController : MonoBehaviour
         // Initialize the question mark GameObject and hide it
         questionMark.SetActive(false);
         exclamationMark.SetActive(false);
+
+        // Get the AudioSource component from this GameObject
+        leftAudioSource = gameObject.AddComponent<AudioSource>();
+        rightAudioSource = gameObject.AddComponent<AudioSource>();
+
+        // Configure the audio sources
+        leftAudioSource.spatialBlend = 1.0f;  // Full 3D spatialization
+        rightAudioSource.spatialBlend = 1.0f;
     }
 
     void Update()
@@ -115,25 +129,38 @@ public class WaiterController : MonoBehaviour
 
 
         SmoothLookAtPlayer();
+
         if (!isQuestionMarkVisible)
         {
-
             questionMark.SetActive(true);
             isQuestionMarkVisible = true;
             questionMarkDisplayStartTime = Time.time;
-            //Debug.LogError("Showing Question Mark ???");
-            
+
+            // Play left and right channel sounds
+            if (leftChannelSound != null && rightChannelSound != null)
+            {
+                leftAudioSource.clip = leftChannelSound;
+                rightAudioSource.clip = rightChannelSound;
+
+                // Set positions for stereo effect
+                leftAudioSource.transform.position = transform.position - transform.right;
+                rightAudioSource.transform.position = transform.position + transform.right;
+
+                leftAudioSource.Play();
+                rightAudioSource.Play();
+            }
         }
+
         if (pHiding.isUnderTable)
         {
             CancelInvoke();
             agent.isStopped = false;
             HideQuestionMark();
         }
+
         if (Time.time - questionMarkDisplayStartTime >= questionMarkDisplayDuration)
         {
             HideQuestionMark();
-            
         }
     }
 

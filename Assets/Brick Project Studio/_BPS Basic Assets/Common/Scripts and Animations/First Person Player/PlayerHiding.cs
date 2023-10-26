@@ -66,9 +66,9 @@ public class PlayerHiding : MonoBehaviour
 
         
         
-        Debug.LogError("Current position: " + transform.position);
-        Debug.LogError("Previous position: " + locBeforeHiding + "\n" +
-                   "Table center location: " + (nearestTable.transform.position - new Vector3(0f, 0.66f, 0f)) + "\n");
+        //Debug.LogError("Current position: " + transform.position);
+        //Debug.LogError("Previous position: " + locBeforeHiding + "\n" +
+        //           "Table center location: " + (nearestTable.transform.position - new Vector3(0f, 0.66f, 0f)) + "\n");
     }
 
     private void FindNearestTable()
