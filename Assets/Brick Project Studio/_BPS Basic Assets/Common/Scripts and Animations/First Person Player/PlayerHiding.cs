@@ -20,12 +20,14 @@ public class PlayerHiding : MonoBehaviour
     private void Update()
     {
 
+        FindNearestTable();
 
-        if (Input.GetKeyDown(KeyCode.C) && Time.time - timer > timeBeforeUnder)
+
+        if (Input.GetKeyDown(KeyCode.C) && Time.time - timer > timeBeforeUnder && nearestTable != null)
         //bug: can reset timer before getting close to table
         {
             Debug.LogError("Pressed C");
-            FindNearestTable();
+            
             if (isUnderTable)
             {
                 Debug.LogError("Out of Table --->");
