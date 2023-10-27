@@ -4,6 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - Flipped
+  - Unflipped
   - Waiter
   layers:
   - Default
@@ -15,7 +17,7 @@ TagManager:
   - Floor
   - Table
   - Player
-  - TableTops
+  - 
   - 
   - 
   - 
