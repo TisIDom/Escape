@@ -20,8 +20,19 @@ public class TableAnimation : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F) && nearestTableAnimator != null) 
         {
             nearestTableAnimator.SetTrigger("Flip");
+
+            nearestTable.tag = "flipped";
+
+        }  
+
+        if (Input.GetKeyDown(KeyCode.G) && nearestTableAnimator != null) 
+        {
+            
+            nearestTableAnimator.SetTrigger("Unflip");
+            
+
         }
-        Debug.LogError(nearestTable.name);
+        
     }
 
     void FindNearestTable()

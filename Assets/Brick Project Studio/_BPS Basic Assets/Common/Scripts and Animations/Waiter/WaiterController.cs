@@ -1,15 +1,34 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class WaiterController : MonoBehaviour
 {
-    public float standTime = 3.0f;
-    public float fieldOfViewAngle = 90.0f;
+    public float standTime = 2.0f;
+    public float fieldOfViewAngle = 135.0f;
     private NavMeshAgent agent;
     private Transform target;
     private float timeToStand;
     private Transform player;
     private LayerMask tableLayerMask;
+    public PlayerHiding pHiding;
+
+    public GameObject questionMark; // Reference to the question mark GameObject
+    private bool isQuestionMarkVisible = false;
+    public float questionMarkDisplayDuration = 2.5f;
+    private float questionMarkDisplayStartTime;
+
+    public GameObject exclamationMark; // Reference to the exclamation mark GameObject
+
+    private bool isExclamationMarkVisible;
+
+    // Add these fields for stereo audio
+    private AudioSource audioSource;
+
+    public AudioClip channelSound;
+
+
+    private bool isSprinting;
 
     void Start()
     {
@@ -18,6 +37,21 @@ public class WaiterController : MonoBehaviour
         FindNewTable();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         tableLayerMask = LayerMask.GetMask("Table");
+        isSprinting = false;
+
+        // Initialize the question mark GameObject and hide it
+        questionMark.SetActive(false);
+        exclamationMark.SetActive(false);
+
+
+
+        // Get the audioSource component from this GameObject
+        audioSource = gameObject.AddComponent<AudioSource>();
+
+        // Configure the audio sources
+        audioSource.spatialBlend = 1.0f;  // Full 3D spatialization
+
+        isExclamationMarkVisible = false;
     }
 
     void Update()
@@ -33,7 +67,7 @@ public class WaiterController : MonoBehaviour
 
     void FindNewTable()
     {
-        Collider[] tableColliders = Physics.OverlapSphere(transform.position, 100.0f, tableLayerMask); // Adjust the radius as needed.
+        Collider[] tableColliders = Physics.OverlapSphere(transform.position, 100.0f, tableLayerMask);
         if (tableColliders.Length > 0)
         {
             target = tableColliders[Random.Range(0, tableColliders.Length)].transform;
@@ -43,19 +77,137 @@ public class WaiterController : MonoBehaviour
 
     void CheckForPlayer()
     {
+        
         Vector3 directionToPlayer = player.position - transform.position;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-        if (angleToPlayer < fieldOfViewAngle * 0.5f)
+        questionMark.transform.LookAt(player);
+        exclamationMark.transform.LookAt(player);
+
+        if (angleToPlayer <= fieldOfViewAngle / 2 || angleToPlayer >= 360 - fieldOfViewAngle / 2 || isSprinting)
         {
+
+
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, directionToPlayer, out hit, 100.0f)) // Adjust the distance as needed.
+            if (Physics.Raycast(transform.position, directionToPlayer, out hit, 10000f) && (!pHiding.isUnderTable || isSprinting))
             {
-                if (hit.collider.CompareTag("Player"))
+                if (hit.collider.CompareTag("Player") && !isSprinting)
                 {
                     agent.SetDestination(player.position);
+                    agent.isStopped = true; // Stop the waiter
+                    Invoke("StartSprinting", questionMarkDisplayDuration);
+                    if (Vector3.Distance(player.position, transform.position) < 5.0f)
+                        Invoke("StartSprinting", 0f);
+
+
+
+                    ShowQuestionMarkAboveHead();
+
+
+                }
+                if (isSprinting)
+                {
+                    agent.SetDestination(player.position);
+
                 }
             }
+            else if (!isQuestionMarkVisible)
+            {
+                agent.isStopped = false;
+            }
+
+
+            if ((isQuestionMarkVisible && !pHiding.isUnderTable) || isExclamationMarkVisible)
+                SmoothLookAtPlayer();
+
+
+
+            if (pHiding.isUnderTable)
+            {
+                CancelInvoke();
+                agent.isStopped = false;
+                if (isQuestionMarkVisible)
+                    HideQuestionMark();
+            }
+
         }
+
+    }
+
+    void ShowQuestionMarkAboveHead()
+    {
+
+        // NOTE: Sometimes turns to exclamation mark without it turning to question mark first
+
+        if (!isQuestionMarkVisible)
+        {
+            // Question mark
+            questionMark.SetActive(true);
+            isQuestionMarkVisible = true;
+            questionMarkDisplayStartTime = Time.time;
+
+            // AUDIO
+            if (channelSound != null)
+            {
+                audioSource.clip = channelSound;
+
+                // Set positions for stereo effect
+                audioSource.transform.position = transform.position - transform.right;
+                audioSource.transform.position = transform.position + transform.right;
+
+                audioSource.Play();
+            }
+        }
+
+
+
+        if (Time.time - questionMarkDisplayStartTime >= questionMarkDisplayDuration)
+        {
+            HideQuestionMark();
+        }
+
+        
+    }
+
+    void ShowExclamationMarkAboveHead()
+    {
+        questionMark.SetActive(false);
+        isQuestionMarkVisible = false;
+        exclamationMark.SetActive(true);
+        isExclamationMarkVisible = true; 
+            
+        //Debug.LogError("Showing Exclamation Mark !!!");
+    }
+
+    void HideQuestionMark()
+    {
+        agent.isStopped = false;
+        questionMark.SetActive(false);
+        isQuestionMarkVisible = false;
+        //Debug.LogError("Coast is Clear !!!");
+    }
+
+    void StartSprinting()
+    {
+        if (!pHiding.isUnderTable)
+        {
+            ShowExclamationMarkAboveHead();
+            agent.isStopped = false;
+            agent.speed *= 2;
+            exclamationMark.SetActive(true);
+        }
+        questionMark.SetActive(false);
+        isQuestionMarkVisible=false;
+        isSprinting = true;
+    }
+
+
+    void SmoothLookAtPlayer()
+    {
+        Vector3 directionToPlayer = player.position - transform.position;
+        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+
+        // Smoothly interpolate the rotation over 0.5 seconds.
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.0f * Time.deltaTime);
     }
 }
