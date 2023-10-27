@@ -21,7 +21,7 @@ public class TableAnimation : MonoBehaviour
         {
             nearestTableAnimator.SetTrigger("Flip");
 
-            nearestTable.tag = "flipped";
+            nearestTable.tag = "Flipped";
 
         }  
 
@@ -29,7 +29,7 @@ public class TableAnimation : MonoBehaviour
         {
             
             nearestTableAnimator.SetTrigger("Unflip");
-            
+            nearestTable.tag = "Unflipped";
 
         }
         
