@@ -63,6 +63,11 @@ public class WaiterController : MonoBehaviour
         }
 
         CheckForPlayer();
+
+        //if(isSprinting)
+        //{
+        //    //Debug.LogError("gotta go fast");
+        //}
     }
 
     void FindNewTable()
