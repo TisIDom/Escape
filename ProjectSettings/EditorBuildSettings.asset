@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FFK Sample Scene.unity
     guid: 43b42d53b401dff46bb511d4975e985c
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: f2c988f254ad367448cfa3afd3b19eb0
   m_configObjects: {}
