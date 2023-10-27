@@ -7,6 +7,7 @@ public class TableAnimation : MonoBehaviour
     private Animator nearestTableAnimator;
     private Collider nearestTable;
 
+    public bool UnderForNow;
 
     void Start()
     {
@@ -16,7 +17,7 @@ public class TableAnimation : MonoBehaviour
     void Update()
     {
         FindNearestTable();
-        
+        Debug.LogError(nearestTable.name);
         if (Input.GetKeyDown(KeyCode.F) && nearestTableAnimator != null) 
         {
             nearestTableAnimator.SetTrigger("Flip");
