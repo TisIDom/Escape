@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -24,15 +25,16 @@ public class WaiterController : MonoBehaviour
 
     // Add these fields for stereo audio
     private AudioSource audioSource;
-
     public AudioClip channelSound;
 
     private bool isSprinting;
 
-    private Collider flippedTable;
+    private List<Transform> flippedTables = new List<Transform>();
+    private TableAnimation tableAnim;
 
     void Start()
     {
+        tableAnim = GameObject.FindGameObjectWithTag("Player").GetComponent<TableAnimation>();
         agent = GetComponent<NavMeshAgent>();
         timeToStand = Time.time + standTime;
         FindNewTable();
@@ -43,7 +45,6 @@ public class WaiterController : MonoBehaviour
         // Initialize the question mark GameObject and hide it
         questionMark.SetActive(false);
         exclamationMark.SetActive(false);
-
 
 
         // Get the audioSource component from this GameObject
@@ -57,11 +58,20 @@ public class WaiterController : MonoBehaviour
 
     void Update()
     {
-        
+        FindFlippedTables();
         if (Time.time >= timeToStand)
         {
+
             FindNewTable();
             timeToStand = Time.time + standTime;
+        }
+
+        if (Vector3.Distance(transform.position, flippedTables[0].position) < 3f)
+        {
+            Animator nearestTableAnimator = flippedTables[0].GetComponent<Animator>();
+            nearestTableAnimator.SetTrigger("Unflip");
+            flippedTables[0].tag = "Unflipped";
+            flippedTables[0].transform.GetChild(0).tag = "Unflipped";
         }
 
         CheckForPlayer();
@@ -72,31 +82,55 @@ public class WaiterController : MonoBehaviour
         //}
     }
 
-    //private void FindFlippedTables()  BIski nesigauna dar. Fuck, kodėl neišeina iš Gameobject masyvo ištraukt colliderių masyvo >:(
-    //{
-    //    GameObject[] tables = GameObject.FindGameObjectsWithTag("Flipped");
-    //    Collider[] colliders = GetComponent<Collider[]>().;
-    //    flippedTable = null;
+    private void FindFlippedTables()  //BIski nesigauna dar. Fuck, kodėl neišeina iš Gameobject masyvo ištraukt colliderių masyvo >:(
+    {
 
-    //    foreach (var table in tables)
-    //    {
-    //        float distance = Vector3.Distance(transform.position, table.transform.position);
-    //        if (distance < nearestDistance)
-    //        {
-    //            nearestDistance = distance;
-    //            flippedTable = tables;
-    //        }
-    //    }
-    //}
+        GameObject[] tables = GameObject.FindGameObjectsWithTag("Flipped");
+
+        foreach (var table in tables)
+        {
+            if (!flippedTables.Contains(table.transform) && table.layer == 7)
+                flippedTables.Add(table.GetComponent<Transform>());
+            if (flippedTables != null && flippedTables.Count > 0)
+            {
+                Debug.LogError(flippedTables.Count);
+            }
+            //if (Vector3.Distance(transform.position, table.transform.position) < 2f)
+            //    tableAnim.TableUnflip();
+
+            if (Vector3.Distance(transform.position, flippedTables[0].transform.position) < 3f)
+            {
+                Animator nearestTableAnimator = flippedTables[0].GetComponent<Animator>();
+                nearestTableAnimator.SetTrigger("Unflip");
+                flippedTables[0].tag = "Unflipped";
+                flippedTables[0].transform.GetChild(0).tag = "Unflipped";
+                flippedTables.RemoveAt(0);
+            }
+        }
+    }
+
+
 
     void FindNewTable()
     {
-        Collider[] tableColliders = Physics.OverlapSphere(transform.position, 100.0f, tableLayerMask);
-        if (tableColliders.Length > 0)
-        {
-            target = tableColliders[Random.Range(0, tableColliders.Length)].transform;
+        
+        if (flippedTables.Count > 0) {
+
+            target = flippedTables[0].transform;
             agent.SetDestination(target.position);
+            flippedTables.Remove(flippedTables[0]);
+
+        } 
+        else
+        {
+            Collider[] tableColliders = Physics.OverlapSphere(transform.position, 100.0f, tableLayerMask);
+            if (tableColliders.Length > 0)
+            {
+                target = tableColliders[Random.Range(0, tableColliders.Length)].transform;
+                agent.SetDestination(target.position);
+            }
         }
+
     }
 
     void CheckForPlayer()
@@ -213,13 +247,13 @@ public class WaiterController : MonoBehaviour
 
     void StartSprinting()
     {
-        if (!pHiding.isUnderTable)
-        {
+        //if (!pHiding.isUnderTable)
+        //{
             ShowExclamationMarkAboveHead();
             agent.isStopped = false;
             agent.speed *= 2;
             exclamationMark.SetActive(true);
-        }
+        //}
         questionMark.SetActive(false);
         isQuestionMarkVisible=false;
         isSprinting = true;
