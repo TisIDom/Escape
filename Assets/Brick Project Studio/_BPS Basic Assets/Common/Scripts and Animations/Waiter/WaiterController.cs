@@ -59,6 +59,7 @@ public class WaiterController : MonoBehaviour
     void Update()
     {
         FindFlippedTables();
+        CheckForPlayer();
         if (Time.time >= timeToStand)
         {
 
@@ -66,7 +67,7 @@ public class WaiterController : MonoBehaviour
             timeToStand = Time.time + standTime;
         }
 
-        if (Vector3.Distance(transform.position, flippedTables[0].position) < 3f)
+        if (Vector3.Distance(transform.position, flippedTables[0].position) < 2f)
         {
             Animator nearestTableAnimator = flippedTables[0].GetComponent<Animator>();
             nearestTableAnimator.SetTrigger("Unflip");
@@ -74,12 +75,7 @@ public class WaiterController : MonoBehaviour
             flippedTables[0].transform.GetChild(0).tag = "Unflipped";
         }
 
-        CheckForPlayer();
-
-        //if(isSprinting)
-        //{
-        //    //Debug.LogError("gotta go fast");
-        //}
+        
     }
 
     private void FindFlippedTables()  //BIski nesigauna dar. Fuck, kodėl neišeina iš Gameobject masyvo ištraukt colliderių masyvo >:(
