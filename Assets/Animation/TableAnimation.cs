@@ -18,19 +18,21 @@ public class TableAnimation : MonoBehaviour
     {
         FindNearestTable();
         Debug.LogError(nearestTable.name);
-        if (Input.GetKeyDown(KeyCode.F) && nearestTableAnimator != null) 
+        if (Input.GetKeyDown(KeyCode.F) && nearestTableAnimator != null && nearestTable.tag == "Unflipped") 
         {
             nearestTableAnimator.SetTrigger("Flip");
 
             nearestTable.tag = "Flipped";
+            nearestTable.transform.GetChild(0).tag = "Flipped";
 
         }  
 
-        if (Input.GetKeyDown(KeyCode.G) && nearestTableAnimator != null) 
+        if (Input.GetKeyDown(KeyCode.G) && nearestTableAnimator != null && nearestTable.tag == "Flipped") 
         {
             
             nearestTableAnimator.SetTrigger("Unflip");
             nearestTable.tag = "Unflipped";
+            nearestTable.transform.GetChild(0).tag = "Unflipped";
 
         }
         

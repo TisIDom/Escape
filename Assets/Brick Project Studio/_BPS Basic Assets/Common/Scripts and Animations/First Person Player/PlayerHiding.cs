@@ -25,7 +25,14 @@ public class PlayerHiding : MonoBehaviour
 
         FindNearestTable();
 
-        if ((Input.GetKeyDown(KeyCode.C) && Time.time - timer > timeBeforeUnder && nearestTable != null))
+        if (isUnderTable && nearestTable.transform.parent.tag == "Flipped" && nearestTable != null)
+        {
+            transform.position = locBeforeHiding;
+            isUnderTable = false;
+            transform.localScale = originalScale;
+        }
+
+        if ((Input.GetKeyDown(KeyCode.C) && Time.time - timer > timeBeforeUnder && nearestTable != null) && nearestTable.transform.parent.tag == "Unflipped")
         //bug: can reset timer before getting close to table
         {
             tableAnim.UnderForNow = true;
@@ -50,7 +57,7 @@ public class PlayerHiding : MonoBehaviour
                 locBeforeHiding = transform.position;
                 //Debug.LogError("location overwriten ");
                 // Find the nearest table and check for obstacles before going under.
-                if (nearestTable != null)
+                if (nearestTable != null )
                 {
                     isUnderTable = true;
                     transform.localScale = originalScale * 0.5f;

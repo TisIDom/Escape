@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -27,8 +27,9 @@ public class WaiterController : MonoBehaviour
 
     public AudioClip channelSound;
 
-
     private bool isSprinting;
+
+    private Collider flippedTable;
 
     void Start()
     {
@@ -56,6 +57,7 @@ public class WaiterController : MonoBehaviour
 
     void Update()
     {
+        
         if (Time.time >= timeToStand)
         {
             FindNewTable();
@@ -69,6 +71,23 @@ public class WaiterController : MonoBehaviour
         //    //Debug.LogError("gotta go fast");
         //}
     }
+
+    //private void FindFlippedTables()  BIski nesigauna dar. Fuck, kodėl neišeina iš Gameobject masyvo ištraukt colliderių masyvo >:(
+    //{
+    //    GameObject[] tables = GameObject.FindGameObjectsWithTag("Flipped");
+    //    Collider[] colliders = GetComponent<Collider[]>().;
+    //    flippedTable = null;
+
+    //    foreach (var table in tables)
+    //    {
+    //        float distance = Vector3.Distance(transform.position, table.transform.position);
+    //        if (distance < nearestDistance)
+    //        {
+    //            nearestDistance = distance;
+    //            flippedTable = tables;
+    //        }
+    //    }
+    //}
 
     void FindNewTable()
     {
