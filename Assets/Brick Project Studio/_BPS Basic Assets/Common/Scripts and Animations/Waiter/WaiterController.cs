@@ -1,3 +1,4 @@
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
@@ -24,14 +25,19 @@ public class WaiterController : MonoBehaviour
 
     // Add these fields for stereo audio
     private AudioSource audioSource;
-
     public AudioClip channelSound;
 
+    public bool isSprinting;
+    private bool canUnflip = true;
 
-    private bool isSprinting;
+    private List<Transform> flippedTables = new List<Transform>();
+    private TableAnimation tableAnim;
+
+    private Collider nearestTable;
 
     void Start()
     {
+        tableAnim = GameObject.FindGameObjectWithTag("Player").GetComponent<TableAnimation>();
         agent = GetComponent<NavMeshAgent>();
         timeToStand = Time.time + standTime;
         FindNewTable();
@@ -44,7 +50,6 @@ public class WaiterController : MonoBehaviour
         exclamationMark.SetActive(false);
 
 
-
         // Get the audioSource component from this GameObject
         audioSource = gameObject.AddComponent<AudioSource>();
 
@@ -52,27 +57,82 @@ public class WaiterController : MonoBehaviour
         audioSource.spatialBlend = 1.0f;  // Full 3D spatialization
 
         isExclamationMarkVisible = false;
+
+
     }
 
     void Update()
     {
+        FindFlippedTables();
+        CheckForPlayer();
+
+        if (Vector3.Distance(transform.position, player.transform.position) < 3f && pHiding.isUnderTable && isSprinting)
+        {
+            nearestTable = pHiding.FindNearestTable();
+            nearestTable.transform.parent.GetComponent<Animator>().SetTrigger("Flip");
+            nearestTable.transform.parent.tag = "Flipped";
+            nearestTable.transform.tag = "Flipped";
+            canUnflip = false;
+        }
+
+
         if (Time.time >= timeToStand)
         {
+
             FindNewTable();
             timeToStand = Time.time + standTime;
         }
 
-        CheckForPlayer();
     }
+
+    private void FindFlippedTables()  
+    {
+
+        GameObject[] tables = GameObject.FindGameObjectsWithTag("Flipped");
+
+        foreach (var table in tables)
+        {
+            if (!flippedTables.Contains(table.transform) && table.layer == 7)
+                flippedTables.Add(table.GetComponent<Transform>());
+            //if (flippedTables != null && flippedTables.Count > 0)
+            //{
+            //    Debug.LogError(flippedTables.Count);
+            //}
+
+            if (Vector3.Distance(transform.position, flippedTables[0].transform.position) < 3f && canUnflip && flippedTables.Count>0)
+            {
+                Animator nearestTableAnimator = flippedTables[0].GetComponent<Animator>();
+                nearestTableAnimator.SetTrigger("Unflip");
+                flippedTables[0].tag = "Unflipped";
+                flippedTables[0].transform.GetChild(0).tag = "Unflipped";
+                flippedTables.RemoveAt(0);
+                break;
+            }
+        }
+    }
+
+
 
     void FindNewTable()
     {
-        Collider[] tableColliders = Physics.OverlapSphere(transform.position, 100.0f, tableLayerMask);
-        if (tableColliders.Length > 0)
-        {
-            target = tableColliders[Random.Range(0, tableColliders.Length)].transform;
+        
+        if (flippedTables.Count > 0) {
+
+            target = flippedTables[0].transform;
             agent.SetDestination(target.position);
+            flippedTables.Remove(flippedTables[0]);
+
+        } 
+        else
+        {
+            Collider[] tableColliders = Physics.OverlapSphere(transform.position, 100.0f, tableLayerMask);
+            if (tableColliders.Length > 0)
+            {
+                target = tableColliders[Random.Range(0, tableColliders.Length)].transform;
+                agent.SetDestination(target.position);
+            }
         }
+
     }
 
     void CheckForPlayer()
@@ -96,14 +156,11 @@ public class WaiterController : MonoBehaviour
                     agent.SetDestination(player.position);
                     agent.isStopped = true; // Stop the waiter
                     Invoke("StartSprinting", questionMarkDisplayDuration);
+
                     if (Vector3.Distance(player.position, transform.position) < 5.0f)
                         Invoke("StartSprinting", 0f);
 
-
-
                     ShowQuestionMarkAboveHead();
-
-
                 }
                 if (isSprinting)
                 {
@@ -120,8 +177,6 @@ public class WaiterController : MonoBehaviour
             if ((isQuestionMarkVisible && !pHiding.isUnderTable) || isExclamationMarkVisible)
                 SmoothLookAtPlayer();
 
-
-
             if (pHiding.isUnderTable)
             {
                 CancelInvoke();
@@ -136,9 +191,6 @@ public class WaiterController : MonoBehaviour
 
     void ShowQuestionMarkAboveHead()
     {
-
-        // NOTE: Sometimes turns to exclamation mark without it turning to question mark first
-
         if (!isQuestionMarkVisible)
         {
             // Question mark
@@ -175,8 +227,6 @@ public class WaiterController : MonoBehaviour
         isQuestionMarkVisible = false;
         exclamationMark.SetActive(true);
         isExclamationMarkVisible = true; 
-            
-        //Debug.LogError("Showing Exclamation Mark !!!");
     }
 
     void HideQuestionMark()
@@ -184,21 +234,20 @@ public class WaiterController : MonoBehaviour
         agent.isStopped = false;
         questionMark.SetActive(false);
         isQuestionMarkVisible = false;
-        //Debug.LogError("Coast is Clear !!!");
     }
 
     void StartSprinting()
     {
-        if (!pHiding.isUnderTable)
-        {
+
             ShowExclamationMarkAboveHead();
             agent.isStopped = false;
             agent.speed *= 2;
             exclamationMark.SetActive(true);
-        }
+
         questionMark.SetActive(false);
         isQuestionMarkVisible=false;
         isSprinting = true;
+        canUnflip = false;
     }
 
 
@@ -207,7 +256,7 @@ public class WaiterController : MonoBehaviour
         Vector3 directionToPlayer = player.position - transform.position;
         Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
 
-        // Smoothly interpolate the rotation over 0.5 seconds.
+        // Smoothly interpolate the rotation over 1 seconds.
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.0f * Time.deltaTime);
     }
 }
