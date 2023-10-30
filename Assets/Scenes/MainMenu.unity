@@ -307,6 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d36c9d508d880af4c889b7e43184e88f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialCanvas: {fileID: 0}
 --- !u!4 &416235922
 Transform:
   m_ObjectHideFlags: 0
@@ -1232,7 +1233,7 @@ PrefabInstance:
       objectReference: {fileID: 416235921}
     - target: {fileID: 516228772192613764, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayGame
+      value: PlayButton
       objectReference: {fileID: 0}
     - target: {fileID: 516228772192613764, guid: 6565dc7b8ea1c07428a71b762ebcb9a2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName

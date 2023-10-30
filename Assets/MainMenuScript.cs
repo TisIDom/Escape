@@ -29,7 +29,7 @@ public class MainMenuController : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "GameScene")
+        if (scene.name == "FFK Sample Scene")
         {
             tutorialCanvas = GameObject.Find("TutorialCanvas"); // replace with your tutorial canvas name
             tutorialCanvas.SetActive(true);
