@@ -3,10 +3,16 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
-    public void PlayGame()
+    public GameObject tutorialCanvas; // assign the tutorial canvas in the inspector
+
+    private void Start()
     {
-        Debug.Log("PLAY");
-        // Replace "YourGameSceneName" with the name of your game's first scene
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+
+    public void PlayButton()
+    {
         SceneManager.LoadScene("FFK Sample Scene");
     }
 
@@ -19,5 +25,14 @@ public class MainMenuController : MonoBehaviour
     {
         Debug.Log("QUIT");
         Application.Quit();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "GameScene")
+        {
+            tutorialCanvas = GameObject.Find("TutorialCanvas"); // replace with your tutorial canvas name
+            tutorialCanvas.SetActive(true);
+        }
     }
 }
