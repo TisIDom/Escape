@@ -28,9 +28,12 @@ public class WaiterController : MonoBehaviour
     public AudioClip channelSound;
 
     private bool isSprinting;
+    private bool canUnflip = true;
 
     private List<Transform> flippedTables = new List<Transform>();
     private TableAnimation tableAnim;
+
+    private Collider nearestTable;
 
     void Start()
     {
@@ -54,12 +57,25 @@ public class WaiterController : MonoBehaviour
         audioSource.spatialBlend = 1.0f;  // Full 3D spatialization
 
         isExclamationMarkVisible = false;
+
+
     }
 
     void Update()
     {
         FindFlippedTables();
         CheckForPlayer();
+
+        if (Vector3.Distance(transform.position, player.transform.position) < 3f && pHiding.isUnderTable && isSprinting)
+        {
+            nearestTable = pHiding.FindNearestTable();
+            nearestTable.transform.parent.GetComponent<Animator>().SetTrigger("Flip");
+            nearestTable.transform.parent.tag = "Flipped";
+            nearestTable.transform.tag = "Flipped";
+            canUnflip = false;
+        }
+
+
         if (Time.time >= timeToStand)
         {
 
@@ -67,18 +83,9 @@ public class WaiterController : MonoBehaviour
             timeToStand = Time.time + standTime;
         }
 
-        if (Vector3.Distance(transform.position, flippedTables[0].position) < 2f)
-        {
-            Animator nearestTableAnimator = flippedTables[0].GetComponent<Animator>();
-            nearestTableAnimator.SetTrigger("Unflip");
-            flippedTables[0].tag = "Unflipped";
-            flippedTables[0].transform.GetChild(0).tag = "Unflipped";
-        }
-
-        
     }
 
-    private void FindFlippedTables()  //BIski nesigauna dar. Fuck, kodėl neišeina iš Gameobject masyvo ištraukt colliderių masyvo >:(
+    private void FindFlippedTables()  
     {
 
         GameObject[] tables = GameObject.FindGameObjectsWithTag("Flipped");
@@ -87,14 +94,12 @@ public class WaiterController : MonoBehaviour
         {
             if (!flippedTables.Contains(table.transform) && table.layer == 7)
                 flippedTables.Add(table.GetComponent<Transform>());
-            if (flippedTables != null && flippedTables.Count > 0)
-            {
-                Debug.LogError(flippedTables.Count);
-            }
-            //if (Vector3.Distance(transform.position, table.transform.position) < 2f)
-            //    tableAnim.TableUnflip();
+            //if (flippedTables != null && flippedTables.Count > 0)
+            //{
+            //    Debug.LogError(flippedTables.Count);
+            //}
 
-            if (Vector3.Distance(transform.position, flippedTables[0].transform.position) < 3f)
+            if (Vector3.Distance(transform.position, flippedTables[0].transform.position) < 3f && canUnflip)
             {
                 Animator nearestTableAnimator = flippedTables[0].GetComponent<Animator>();
                 nearestTableAnimator.SetTrigger("Unflip");
@@ -150,14 +155,11 @@ public class WaiterController : MonoBehaviour
                     agent.SetDestination(player.position);
                     agent.isStopped = true; // Stop the waiter
                     Invoke("StartSprinting", questionMarkDisplayDuration);
+
                     if (Vector3.Distance(player.position, transform.position) < 5.0f)
                         Invoke("StartSprinting", 0f);
 
-
-
                     ShowQuestionMarkAboveHead();
-
-
                 }
                 if (isSprinting)
                 {
@@ -174,8 +176,6 @@ public class WaiterController : MonoBehaviour
             if ((isQuestionMarkVisible && !pHiding.isUnderTable) || isExclamationMarkVisible)
                 SmoothLookAtPlayer();
 
-
-
             if (pHiding.isUnderTable)
             {
                 CancelInvoke();
@@ -190,9 +190,6 @@ public class WaiterController : MonoBehaviour
 
     void ShowQuestionMarkAboveHead()
     {
-
-        // NOTE: Sometimes turns to exclamation mark without it turning to question mark first
-
         if (!isQuestionMarkVisible)
         {
             // Question mark
@@ -229,8 +226,6 @@ public class WaiterController : MonoBehaviour
         isQuestionMarkVisible = false;
         exclamationMark.SetActive(true);
         isExclamationMarkVisible = true; 
-            
-        //Debug.LogError("Showing Exclamation Mark !!!");
     }
 
     void HideQuestionMark()
@@ -238,21 +233,20 @@ public class WaiterController : MonoBehaviour
         agent.isStopped = false;
         questionMark.SetActive(false);
         isQuestionMarkVisible = false;
-        //Debug.LogError("Coast is Clear !!!");
     }
 
     void StartSprinting()
     {
-        //if (!pHiding.isUnderTable)
-        //{
+
             ShowExclamationMarkAboveHead();
             agent.isStopped = false;
             agent.speed *= 2;
             exclamationMark.SetActive(true);
-        //}
+
         questionMark.SetActive(false);
         isQuestionMarkVisible=false;
         isSprinting = true;
+        canUnflip = false;
     }
 
 
@@ -261,7 +255,7 @@ public class WaiterController : MonoBehaviour
         Vector3 directionToPlayer = player.position - transform.position;
         Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
 
-        // Smoothly interpolate the rotation over 0.5 seconds.
+        // Smoothly interpolate the rotation over 1 seconds.
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.0f * Time.deltaTime);
     }
 }

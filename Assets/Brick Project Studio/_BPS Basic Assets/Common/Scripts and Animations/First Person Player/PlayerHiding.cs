@@ -53,9 +53,8 @@ public class PlayerHiding : MonoBehaviour
             }
             else
             {
-                //Debug.LogError("In Table --->");
                 locBeforeHiding = transform.position;
-                //Debug.LogError("location overwriten ");
+
                 // Find the nearest table and check for obstacles before going under.
                 if (nearestTable != null )
                 {
@@ -68,22 +67,11 @@ public class PlayerHiding : MonoBehaviour
             }
             timer = Time.time;
 
-
-            //Debug.LogError("Pressed C");
-            //Debug.LogError("Current position: " + transform.position);
-            //Debug.LogError("Previous position: " + locBeforeHiding + "\n" +
-            //           "Table center location: " + (nearestTable.transform.position - new Vector3(0f, 0.66f, 0f)) + "\n");
-
         }
-        //Debug.LogError("Current position: " + transform.position);
 
-
-        //Debug.LogError("Current position: " + transform.position);
-        //Debug.LogError("Previous position: " + locBeforeHiding + "\n" +
-        //           "Table center location: " + (nearestTable.transform.position - new Vector3(0f, 0.66f, 0f)) + "\n");
     }
 
-    private void FindNearestTable()
+    public Collider FindNearestTable()
     {
         Collider[] tables = Physics.OverlapSphere(transform.position, 1f, LayerMask.GetMask("TableTops"));
         float nearestDistance = float.MaxValue;
@@ -98,6 +86,7 @@ public class PlayerHiding : MonoBehaviour
                 nearestTable = table;
             }
         }
+        return nearestTable;
     }
 
 
