@@ -27,7 +27,7 @@ public class WaiterController : MonoBehaviour
     private AudioSource audioSource;
     public AudioClip channelSound;
 
-    private bool isSprinting;
+    public bool isSprinting;
     private bool canUnflip = true;
 
     private List<Transform> flippedTables = new List<Transform>();
@@ -99,13 +99,14 @@ public class WaiterController : MonoBehaviour
             //    Debug.LogError(flippedTables.Count);
             //}
 
-            if (Vector3.Distance(transform.position, flippedTables[0].transform.position) < 3f && canUnflip)
+            if (Vector3.Distance(transform.position, flippedTables[0].transform.position) < 3f && canUnflip && flippedTables.Count>0)
             {
                 Animator nearestTableAnimator = flippedTables[0].GetComponent<Animator>();
                 nearestTableAnimator.SetTrigger("Unflip");
                 flippedTables[0].tag = "Unflipped";
                 flippedTables[0].transform.GetChild(0).tag = "Unflipped";
                 flippedTables.RemoveAt(0);
+                break;
             }
         }
     }

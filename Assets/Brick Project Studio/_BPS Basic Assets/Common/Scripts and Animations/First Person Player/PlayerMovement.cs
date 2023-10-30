@@ -19,7 +19,7 @@ namespace SojaExiles
         // Update is called once per frame
         void Update()
         {
-            if(!playerHiding.isUnderTable) 
+            if(!playerHiding.isUnderTable && this.isActiveAndEnabled) 
             {
 
                 float x = Input.GetAxis("Horizontal");
@@ -34,9 +34,10 @@ namespace SojaExiles
                 controller.Move(velocity * Time.deltaTime);
             }
 
-            //if(controller.transform.position.y < -5 ) {
-            //    transform.position = new Vector3(-22.2f, 1.0f, 21.7f);
-            //}
+            if (controller.transform.position.y < -5)
+            {
+                transform.position = new Vector3(-22.2f, 1.0f, 21.7f);
+            }
 
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerHiding : MonoBehaviour
 {
-    public bool isUnderTable = false;
+    public bool isUnderTable;
     private Vector3 originalScale;
     private Collider nearestTable;
     private Vector3 locBeforeHiding;
@@ -18,6 +18,7 @@ public class PlayerHiding : MonoBehaviour
         timer = Time.time;
         originalScale = transform.localScale;
         tableAnim = GetComponent<TableAnimation>();
+        isUnderTable = false;
     }
 
     private void Update()
