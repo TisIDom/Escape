@@ -26,6 +26,7 @@ public class WaiterController : MonoBehaviour
     // Add these fields for stereo audio
     private AudioSource audioSource;
     public AudioClip channelSound;
+    public AudioClip exclamationSound;
 
     public bool isSprinting;
     private bool canUnflip = true;
@@ -226,7 +227,10 @@ public class WaiterController : MonoBehaviour
         questionMark.SetActive(false);
         isQuestionMarkVisible = false;
         exclamationMark.SetActive(true);
-        isExclamationMarkVisible = true; 
+        isExclamationMarkVisible = true;
+
+
+
     }
 
     void HideQuestionMark()
@@ -238,8 +242,18 @@ public class WaiterController : MonoBehaviour
 
     void StartSprinting()
     {
+        if (exclamationSound != null && !isSprinting)
+        {
+            audioSource.clip = exclamationSound;
 
-            ShowExclamationMarkAboveHead();
+            // Set positions for stereo effect
+            audioSource.transform.position = transform.position - transform.right;
+            audioSource.transform.position = transform.position + transform.right;
+
+            audioSource.Play();
+        }
+
+        ShowExclamationMarkAboveHead();
             agent.isStopped = false;
             agent.speed *= 2;
             exclamationMark.SetActive(true);
