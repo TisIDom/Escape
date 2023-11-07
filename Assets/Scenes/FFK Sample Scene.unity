@@ -3936,6 +3936,7 @@ GameObject:
   - component: {fileID: 181200967}
   - component: {fileID: 181200966}
   - component: {fileID: 181200965}
+  - component: {fileID: 181200969}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -4027,6 +4028,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &181200969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181200964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad186f5f20dd06746a1e0e3a5efc5636, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &182606638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29161,6 +29174,14 @@ PrefabInstance:
       propertyPath: exclamationMark
       value: 
       objectReference: {fileID: 2016335311}
+    - target: {fileID: 4183566147169832688, guid: ec5da3eac43e29b48891fc1cb814735c, type: 3}
+      propertyPath: exclamationSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 061bd9a32ff2a6441ac7121f388675ad, type: 3}
+    - target: {fileID: 4183566147169832688, guid: ec5da3eac43e29b48891fc1cb814735c, type: 3}
+      propertyPath: fieldOfViewAngle
+      value: 135
+      objectReference: {fileID: 0}
     - target: {fileID: 4183566147169832688, guid: ec5da3eac43e29b48891fc1cb814735c, type: 3}
       propertyPath: tableLayer.m_Bits
       value: 128
