@@ -9,20 +9,22 @@ public class TutorialScreenScript : MonoBehaviour
 
     private void OnEnable()
     {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+        Cursor.lockState = CursorLockMode.None; // Unlock the cursor
+        Cursor.visible = true; // Make the cursor visible
         Time.timeScale = 0; // Pause the game
         okayButton.onClick.AddListener(HideTutorial); // Add a listener to the "Okay" button
     }
 
     private void HideTutorial()
     {
+        
+
         gameObject.SetActive(false); // Hide the tutorial screen
         inGameUI.SetActive(true); // Show the in-game UI
         Time.timeScale = 1; // Resume the game
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+
         okayButton.onClick.RemoveListener(HideTutorial); // Remove the listener to prevent multiple calls
     }
+
 }
 
