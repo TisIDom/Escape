@@ -13,6 +13,7 @@ public class MainMenuController : MonoBehaviour
 
     public void PlayButton()
     {
+        Time.timeScale = 1.0f;
         SceneManager.LoadScene("FFK Sample Scene");
     }
 

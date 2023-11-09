@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SojaExiles
 
@@ -13,12 +14,19 @@ namespace SojaExiles
 
         public float speed = 5f;
         public float gravity = -15f;
+        public GameObject youWin; 
 
         Vector3 velocity;
 
         // Update is called once per frame
+
         void Update()
         {
+            if(transform.position.z < 1.0f)
+            {
+                InitializeYouWin();
+            }
+
             if(!playerHiding.isUnderTable && this.isActiveAndEnabled) 
             {
 
@@ -40,5 +48,15 @@ namespace SojaExiles
             }
 
         }
+        void InitializeYouWin()
+        {
+            youWin.SetActive(true);
+            Time.timeScale = 0f;
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
+
+
 }
