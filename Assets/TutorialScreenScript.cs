@@ -1,20 +1,28 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class TutorialScreenScript : MonoBehaviour
 {
     public GameObject inGameUI;
-    void OnEnable()
+    public Button okayButton;
+
+    private void OnEnable()
     {
-        Time.timeScale = 0; // pause the game
-        StartCoroutine(ShowAndHide()); // start the coroutine when canvas is enabled
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        Time.timeScale = 0; // Pause the game
+        okayButton.onClick.AddListener(HideTutorial); // Add a listener to the "Okay" button
     }
 
-    IEnumerator ShowAndHide()
+    private void HideTutorial()
     {
-        yield return new WaitForSecondsRealtime(5); // wait for 5 seconds in real time
-        gameObject.SetActive(false); // then hide the tutorial screen
-        inGameUI.SetActive(true); // and show the in-game UI
-        Time.timeScale = 1; // resume the game
+        gameObject.SetActive(false); // Hide the tutorial screen
+        inGameUI.SetActive(true); // Show the in-game UI
+        Time.timeScale = 1; // Resume the game
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        okayButton.onClick.RemoveListener(HideTutorial); // Remove the listener to prevent multiple calls
     }
 }
+
